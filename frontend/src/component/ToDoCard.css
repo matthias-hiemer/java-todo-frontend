@@ -1,0 +1,6 @@
+.Card {
+    border-style: solid;
+    border-color: hotpink;
+    display: flex;
+    flex-wrap: wrap;
+}

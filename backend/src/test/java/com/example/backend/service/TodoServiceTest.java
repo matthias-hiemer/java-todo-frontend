@@ -1,100 +1,96 @@
-package com.example.backend.service;
+package de.neuefische.backend.service;
 
-import com.example.backend.model.TodoDTO;
-import com.example.backend.model.TodoElement;
-import com.example.backend.repo.TodoRepo;
+import de.neuefische.backend.model.ToDo;
+import de.neuefische.backend.model.ToDoDto;
+import de.neuefische.backend.repo.ToDoRepo;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class TodoServiceTest {
+class ToDoServiceTest {
 
-    TodoRepo todoRepo = mock(TodoRepo.class);
+    ToDoRepo toDoRepo = mock(ToDoRepo.class);
     IdService idService = mock(IdService.class);
-    TodoService service = new TodoService(todoRepo, idService);
+    ToDoService toDoService = new ToDoService(toDoRepo, idService);
 
     @Test
-    void shouldReturnWholeListWhenGetAllIsRequested(){
-        //GIVEN
-        TodoElement todo1 = new TodoElement();
-        TodoElement todo2 = new TodoElement();
-        List<TodoElement> todoList = new ArrayList<>(List.of(todo1, todo2));
-        when(todoRepo.findAll()).thenReturn(todoList);
+    void getAllToDos_Returns_AllToDos(){
+        // GIVEN
+        List<ToDo> toDos = new ArrayList<>();
+        toDos.add(new ToDo("Friday-Exercise","OPEN" , "1"));
+        when(toDoRepo.getAllToDos()).thenReturn(toDos);
+        // WHEN
 
-        //WHEN
-        List<TodoElement> actual = service.getAllTodo();
+        List<ToDo> actual = toDoService.getAllToDos();
+        // THEN
 
-        //THEN
-        assertEquals(List.of(todo1, todo2), actual);
+        assertEquals(toDos, actual);
+
     }
 
     @Test
-    void shouldReturnTodoElementWhenGivenAnDTO(){
-        //GIVEN
-        TodoDTO todoDTO = new TodoDTO("Test","OPEN");
-        TodoElement expected = new TodoElement("1", "Test", "OPEN");
+    void getToDoById_Returns_ToDoForGivenId(){
+        // GIVEN
+        ToDo toDo = new ToDo("Friday-Exercise","OPEN" , "1");
+        when(toDoRepo.getToDoById("1")).thenReturn(toDo);
+        // WHEN
+
+        ToDo actual = toDoService.getToDoById("1");
+        // THEN
+
+        assertEquals(toDo, actual);
+
+    }
+
+    @Test
+    void postNewToDo_Returns_AddedToDo(){
+        // GIVEN
+        ToDoDto toDoDto = new ToDoDto("Friday-Exercise","OPEN");
+        ToDo expectedToDo = new ToDo("Friday-Exercise","OPEN", "1");
         when(idService.generateID()).thenReturn("1");
-        when(todoRepo.postTodo(any())).thenReturn(TodoElement.builder()
+        when(toDoRepo.addNewToDo(any())).thenReturn(ToDo.builder()
+                .description(toDoDto.getDescription())
+                .status(toDoDto.getStatus())
                 .id("1")
-                .description(todoDTO.getDescription())
-                .status(todoDTO.getStatus())
                 .build());
+        // WHEN
 
-        //WHEN
-        TodoElement actual = service.postNewTodo(todoDTO);
+        ToDo actual = toDoService.postNewToDo(toDoDto);
+        // THEN
 
-        //THEN
-        assertEquals(expected, actual);
+        assertEquals(expectedToDo, actual);
     }
-
     @Test
-    void shouldReturnElement2WhenRequestedById(){
-        //GIVEN
-        TodoElement todo1 = new TodoElement("1", "Test", "OPEN");
-        TodoElement todo2 = new TodoElement("2", "KeinTest", "OPEN");
-        List<TodoElement> todoList = new ArrayList<>(List.of(todo1, todo2));
-        when(todoRepo.findByID("2")).thenReturn(todo2);
+    void editToDo_Returns_EditedToDo(){
+        // GIVEN
+        ToDo toDo1 = new ToDo("Friday-Exercise","OPEN" , "1");
+        when(toDoRepo.editToDo(any())).thenReturn(toDo1);
+        // WHEN
 
-        //WHEN
+        ToDo actual = toDoService.editToDo(toDo1);
+        // THEN
 
-        TodoElement actual = service.getTodoByID("2");
-
-        //THEN
-        assertEquals(todo2, actual);
-    }
-
-    @Test
-    void shouldReturnUpdatedTodo(){
-        //GIVEN
-        TodoElement todo1 = new TodoElement("1", "Test", "OPEN");
-        when(todoRepo.updateTodo(todo1)).thenReturn(todo1);
-        when(todoRepo.existsById("1")).thenReturn(true);
-
-        //WHEN
-        TodoElement actual = service.updateTodo(todo1);
-
-        //THEN
-        assertEquals(todo1, actual);
+        assertEquals(toDo1, actual);
 
     }
 
     @Test
-    void shouldReturnDeletedElement(){
-        //GIVEN
-        TodoElement todo2 = new TodoElement("2", "Test", "DONE");
-        when(todoRepo.deleteTodoById("2")).thenReturn(todo2);
+    void deleteToDo_Returns_DeletedToDos(){
+        // GIVEN
+        ToDo toDo1 = new ToDo("Friday-Exercise","OPEN" , "1");
+        when(toDoRepo.deleteToDo("1")).thenReturn(toDo1);
+        // WHEN
 
-        //WHEN
-        TodoElement actual = service.deleteTodoById("2");
+        ToDo actual = toDoService.deleteToDo("1");
+        // THEN
 
-        //THEN
-        assertEquals(todo2, actual);
+        assertEquals(toDo1, actual);
 
     }
 

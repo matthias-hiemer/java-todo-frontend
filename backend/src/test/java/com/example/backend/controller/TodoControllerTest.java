@@ -1,8 +1,8 @@
-package com.example.backend.controller;
+package de.neuefische.backend.controller;
 
-import com.example.backend.model.TodoElement;
-import com.example.backend.repo.TodoRepo;
-import com.example.backend.service.IdService;
+import de.neuefische.backend.model.ToDo;
+import de.neuefische.backend.repo.ToDoRepo;
+import de.neuefische.backend.service.IdService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -12,12 +12,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -26,150 +28,148 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-public class TodoControllerTest {
+class ToDoControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private TodoRepo repo;
-
+    private ToDoRepo toDoRepo;
     @MockBean
     private IdService idService;
 
-    @Test
-    void addTodo() throws Exception {
 
-        //GIVEN
-        when(idService.generateID()).thenReturn("1");
 
-        String requestBody = """
-                {
-                    "description":"Test",
-                    "status":"OPEN"
-                }
-                """;
-
-        String expectedJSON = """
-                {
-                    "id":"1",
-                    "description":"Test",
-                    "status":"OPEN"
-                }
-                """;
-
-        //WHEN+THEN
-        mockMvc.perform(
-                post("/api/todo")
-                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .content(requestBody))
-                .andExpect(status().isOk())
-                .andExpect(content().json(expectedJSON));
-
-    }
 
     @Test
-    void getAllTodoShouldReturnItemsFromDB() throws Exception {
+    void getAllToDos_Returns_AllToDosInRepo() throws Exception {
 
-        //GIVEN
-
-        repo.postTodo(new TodoElement("1","Test", "OPEN"));
-        repo.postTodo(new TodoElement("2","Test2", "DONE"));
+        // GIVEN
+        toDoRepo.addNewToDo(new ToDo("Test", "OPEN", "1"));
+        toDoRepo.addNewToDo(new ToDo("Test2", "DONE", "2"));
 
         String expectedJSON = """
                 [
                     {
-                        "id":"1",
                         "description":"Test",
-                        "status":"OPEN"
+                        "status":"OPEN",
+                        "id": "1"
                     },
                     {
-                        "id":"2",
                         "description":"Test2",
-                        "status":"DONE"
+                        "status":"DONE",
+                        "id":"2"
                     }
                 ]
                 """;
         //WHEN+THEN
-        mockMvc.perform(get("/api/todo"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/todo"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJSON));
+
     }
 
     @Test
-    void updateTodoShouldUpdate() throws Exception {
+    void getToDoById_Returns_ToDoForGivenId() throws Exception {
+
+        // GIVEN
+        toDoRepo.addNewToDo(new ToDo("Friday-Exercise", "OPEN", "1"));
+
+        String expectedJson= """
+                
+                {
+                    "description": "Friday-Exercise",
+                    "status": "OPEN",
+                    "id": "1"
+                }
+                
+                
+                """;
+
+        // WHEN & THEN
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/todo/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedJson));
+
+    }
+
+    @Test
+    void postNewToDo_Returns_AddedToDo() throws Exception{
 
         //GIVEN
-        repo.postTodo(new TodoElement("1","Test", "OPEN"));
-        repo.postTodo(new TodoElement("2","Test2", "DONE"));
-
+        when(idService.generateID()).thenReturn("1");
         String requestBody = """
-                {
-                    "id":"1",
-                    "description":"get some coffee",
-                    "status":"IN_PROGRESS"
-                }
+                    {
+                        "description": "new to do",
+                        "status": "OPEN"
+                    }
                 """;
 
-        String expectedJSON = """
-                {
-                    "id":"1",
-                    "description":"get some coffee",
-                    "status":"IN_PROGRESS"
-                }
+        String expectedResponseBody = """
+                    {
+                        "description": "new to do",
+                        "status": "OPEN",
+                        "id": "1"
+                    }
                 """;
-        //WHEN+THEN
+
         mockMvc.perform(
-                put("/api/todo/1")
-                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .content(requestBody))
+                        post("/api/todo")
+                                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                .content(requestBody))
                 .andExpect(status().isOk())
-                .andExpect(content().json(expectedJSON));
-
-        //THEN
-        List<TodoElement> todoElements = repo.findAll();
-        assertThat(todoElements, containsInAnyOrder(
-                new TodoElement("1","get some coffee", "IN_PROGRESS"),
-                new TodoElement("2","Test2", "DONE")));
-
+                .andExpect(content().json(expectedResponseBody));
     }
 
     @Test
-    void getTodoByIdShouldReturnRequestedItem() throws Exception {
-
+    void editToDo_ShouldEditToDo() throws Exception{
         //GIVEN
-        repo.postTodo(new TodoElement("1","Test", "OPEN"));
-        repo.postTodo(new TodoElement("2","Test2", "DONE"));
-
-        String expectedJSON = """
-                {
-                    "id":"1",
-                    "description":"Test",
-                    "status":"OPEN"
-                }
+        toDoRepo.addNewToDo(new ToDo("Friday-Exercise", "OPEN", "1"));
+        toDoRepo.addNewToDo(new ToDo("new to do", "OPEN", "2"));
+        String requestBody = """
+                    {
+                        "description": "new to do",
+                        "status": "IN-PROGRESS",
+                        "id": "2"
+                    }
                 """;
-        //WHEN+THEN
-        mockMvc.perform(get("/api/todo/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().json(expectedJSON));
 
+        String expectedResponseBody = """
+                    {
+                        "description": "new to do",
+                        "status": "IN-PROGRESS",
+                        "id": "2"
+                    }
+                """;
+
+        mockMvc.perform(
+                        put("/api/todo/2")
+                                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                .content(requestBody))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedResponseBody));
+
+        // THEN
+        List<ToDo> toDos = toDoRepo.getAllToDos();
+        assertThat(toDos, containsInAnyOrder(
+                new ToDo("Friday-Exercise", "OPEN", "1"),
+                new ToDo("new to do", "IN-PROGRESS", "2")
+        ));
     }
 
     @Test
-    void deleteTodoShouldDeleteRequestedTodoFromList() throws Exception {
-
+    void deleteToDo_ShouldDeleteToDo() throws Exception{
         //GIVEN
-        TodoElement todo1 = new TodoElement("1","Test", "OPEN");
-        TodoElement todo2 = new TodoElement("2","Test2", "DONE");
-        repo.postTodo(todo1);
-        repo.postTodo(todo2);
+        toDoRepo.addNewToDo(new ToDo("Friday-Exercise", "OPEN", "1"));
+        toDoRepo.addNewToDo(new ToDo("new to do", "OPEN", "2"));
 
-        //WHEN
+        // WHEN
         mockMvc.perform(delete("/api/todo/1"));
 
         //THEN
-        List<TodoElement> actual = repo.findAll();
-        assertEquals(actual, List.of(todo2));
+        List<ToDo> toDos = toDoRepo.getAllToDos();
+        assertThat(toDos, containsInAnyOrder(
+                new ToDo("new to do", "OPEN", "2")));
     }
 
 }

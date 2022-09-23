@@ -1,8 +1,8 @@
-package com.example.backend.controller;
+package de.neuefische.backend.controller;
 
-import com.example.backend.model.TodoDTO;
-import com.example.backend.model.TodoElement;
-import com.example.backend.service.TodoService;
+import de.neuefische.backend.model.ToDo;
+import de.neuefische.backend.model.ToDoDto;
+import de.neuefische.backend.service.ToDoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,38 +10,39 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/todo")
-public class TodoController {
+public class ToDoController {
 
-    private final TodoService service;
+    private ToDoService service;
 
     @Autowired
-    public TodoController(TodoService service) {
+    public ToDoController(ToDoService service) {
         this.service = service;
     }
-
-
     @GetMapping
-    public List<TodoElement> getAllTodo(){
-        return service.getAllTodo();
+    public List<ToDo> getAllToDos(){
+        return service.getAllToDos();
     }
+
+    @GetMapping("{id}")
+    public ToDo getToDoById(@PathVariable String id){
+        return service.getToDoById(id);
+    }
+
 
     @PostMapping
-    public TodoElement postNewTodo(@RequestBody TodoDTO todo){
-        return service.postNewTodo(todo);
+    public ToDo postNewToDo(@RequestBody ToDoDto toDoDto){
+        return service.postNewToDo(toDoDto);
     }
 
-    @GetMapping(path = "/{id}")
-    public TodoElement getTodoByID(@PathVariable String id){
-        return service.getTodoByID(id);
+    @PutMapping("{id}")
+    public ToDo editToDo(@PathVariable String id, @RequestBody ToDo toDoDetails){
+        return service.editToDo(toDoDetails);
     }
 
-    @PutMapping(path = "/{id}")
-    public TodoElement updateTodo(@PathVariable String id, @RequestBody TodoElement todo){
-        return service.updateTodo(todo);
+    @DeleteMapping("{id}")
+    public ToDo deleteToDo(@PathVariable String id){
+       return service.deleteToDo(id);
     }
 
-    @DeleteMapping(path = "/{id}")
-    public TodoElement deleteTodoById(@PathVariable String id){
-        return service.deleteTodoById(id);
-    }
+
 }

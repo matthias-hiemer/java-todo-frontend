@@ -1,40 +1,42 @@
-package com.example.backend.repo;
+package de.neuefische.backend.repo;
 
-import com.example.backend.model.TodoElement;
+import de.neuefische.backend.model.ToDo;
+import de.neuefische.backend.model.ToDoDto;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
-public class TodoRepo {
+public class ToDoRepo {
 
-    HashMap<String, TodoElement> todoDB = new HashMap<>();
+    private Map<String, ToDo> toDos = new HashMap<>();
 
-    public List<TodoElement> findAll() {
-        return new ArrayList<>(todoDB.values());
+    public List<ToDo> getAllToDos() {
+        return new ArrayList<ToDo>(toDos.values());
     }
 
-    public TodoElement postTodo(TodoElement todo) {
-        todoDB.put(todo.getId(), todo);
-        return todo;
+    public ToDo getToDoById(String id) {
+        return toDos.get(id);
     }
 
-    public TodoElement findByID(String id) {
-        return todoDB.get(id);
+    public ToDo addNewToDo(ToDo toDo) {
+        toDos.put(toDo.getId(), toDo);
+        return toDo;
     }
 
-    public TodoElement updateTodo(TodoElement todo) {
-        todoDB.put(todo.getId(), todo);
-        return todo;
+    public Map<String, ToDo> getToDos() {
+        return toDos;
     }
 
-    public TodoElement deleteTodoById(String id) {
-        return todoDB.remove(id);
+    public ToDo editToDo(ToDo editedToDo) {
+        toDos.put(editedToDo.getId(), editedToDo);
+        return editedToDo;
     }
 
-    public boolean existsById(String id){
-        return todoDB.containsKey(id);
+    public ToDo deleteToDo(String id) {
+        return toDos.remove(id);
     }
 }

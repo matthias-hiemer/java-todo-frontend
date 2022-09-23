@@ -1,18 +1,19 @@
-package com.example.backend.model;
+package de.neuefische.backend.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TodoElement {
+public class ToDo {
 
-    private String id;
     private String description;
     private String status;
-
+    private String id;
 }

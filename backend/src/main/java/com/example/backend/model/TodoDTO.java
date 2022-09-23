@@ -1,4 +1,4 @@
-package com.example.backend.model;
+package de.neuefische.backend.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TodoDTO {
-
+public class ToDoDto {
     private String description;
     private String status;
 }

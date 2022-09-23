@@ -1,51 +1,56 @@
-package com.example.backend.service;
+package de.neuefische.backend.service;
 
-import com.example.backend.model.TodoDTO;
-import com.example.backend.model.TodoElement;
-import com.example.backend.repo.TodoRepo;
+import de.neuefische.backend.model.ToDo;
+import de.neuefische.backend.model.ToDoDto;
+import de.neuefische.backend.repo.ToDoRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @Service
-public class TodoService {
+public class ToDoService {
 
-    private final TodoRepo repo;
-    private final IdService idService;
+    private ToDoRepo toDoRepo;
+    private IdService idService;
 
-    @Autowired
-    public TodoService(TodoRepo repo, IdService idService) {
-        this.repo = repo;
+    public ToDoService(ToDoRepo toDoRepo, IdService idService) {
+        this.toDoRepo = toDoRepo;
         this.idService = idService;
     }
 
-    public List<TodoElement> getAllTodo() {
-        return repo.findAll();
+    @Autowired
+
+
+    public List<ToDo> getAllToDos(){
+        return toDoRepo.getAllToDos();
     }
 
-    public TodoElement postNewTodo(TodoDTO todo) {
-        TodoElement todoElement = TodoElement.builder()
-                .status(todo.getStatus())
-                .description(todo.getDescription())
+    public ToDo postNewToDo(ToDoDto toDo) {
+        ToDo newToDo = ToDo.builder()
+                .status(toDo.getStatus())
+                .description(toDo.getDescription())
                 .id(idService.generateID())
                 .build();
-        return repo.postTodo(todoElement);
+        return toDoRepo.addNewToDo(newToDo);
     }
 
-    public TodoElement getTodoByID(String id) {
-        return repo.findByID(id);
-    }
-
-    public TodoElement updateTodo(TodoElement todo) {
-        if (!repo.existsById(todo.getId())){
-            throw new NoSuchElementException("There is no Element with the requested ID");
+    public ToDo getToDoById(String id) {
+        ToDo foundToDo = toDoRepo.getToDoById(id);
+        if(foundToDo == null){
+            throw new NoSuchElementException("No ToDo was found with id: " + id);
         }
-        return repo.updateTodo(todo);
+        return toDoRepo.getToDoById(id);
     }
 
-    public TodoElement deleteTodoById(String id) {
-        return repo.deleteTodoById(id);
+    public ToDo editToDo(ToDo toEditToDo) {
+        return toDoRepo.editToDo(toEditToDo);
+    }
+
+    public ToDo deleteToDo(String id) {
+        return toDoRepo.deleteToDo(id);
     }
 }

@@ -1,20 +1,18 @@
-import {ToDo} from "../model/Todo";
 import "./ToDoCard.css"
+import {toDos} from "../model/ToDos";
 
 type ToDoCardProps = {
-    ToDoCard: ToDo;
-
-
+    ToDoCard: toDos;
 }
-export default function ToDoCard(props: ToDoCardProps) {
 
-    return (
+export default function ToDoCard (props: ToDoCardProps){
 
-        <div>
-
-            {props.ToDoCard.description}
-            {props.ToDoCard.status}
+    return(
+        <div className={"card"}>
+                <h3>{props.ToDoCard.description}</h3>
+                <p>{props.ToDoCard.status}</p>
         </div>
-    )
-}
 
+    )
+
+}

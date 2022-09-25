@@ -1,16 +1,18 @@
-.cards {
-    background-color: beige;
+
+.Board {
     display: flex;
-    flex-direction: row;
+    float: left;
     flex-wrap: wrap;
     justify-content: center;
-}
+    font-family: sans-serif;
+    width: 300px;
+    border: solid hotpink;
+    border-radius: 15px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 1px 2px 8px hotpink;
+    margin: 10px;
+    height: 300px;
+    font-size: 30px;
 
-
-.card {
-    background-color: lightgray;
-    border: 1px solid black;
-    margin: 1rem 1rem;
-    border-radius: 9px;
-    box-shadow: 5px 5px 5px #00000072;
 }

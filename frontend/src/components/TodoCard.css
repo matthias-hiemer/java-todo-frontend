@@ -7,3 +7,10 @@
     padding: 5px;
     background: #444343;
 }
+
+.todo-card button {
+    color: white;
+    background: none;
+    border: none;
+}
+

@@ -33,7 +33,11 @@ function App() {
             .then(getTodos) // reload todos from backend
     }
 
+    const deleteTodo = (id: string) => {
 
+        axios.delete("/api/todo/" + id)
+            .then(getTodos) // reload todos from backend
+  }
 
 
   return (
@@ -42,7 +46,7 @@ function App() {
 
         <h1>Todos</h1>
 
-        <TodoOverview todos={todos} />
+        <TodoOverview todos={todos} deleteTodo={deleteTodo} />
         <CreateTodo addTodo={addTodo} />
 
       </header>

@@ -1,4 +1,3 @@
-
 import "./ToDoCard.css"
 import {Todo} from "../model/Todo";
 

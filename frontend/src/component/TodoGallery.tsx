@@ -1,20 +1,20 @@
 import {Todo} from "../model/Todo";
 
 
-type TodoElementProps = {
+type TodoGalleryProps = {
     todos: Todo[];
     filterTodo: string;
 }
 
-export default function TodoElement (props: TodoElementProps){
+export default function TodoGallery (props: TodoGalleryProps){
 
     return(
         <div>
             {props.todos.map(
-                (todo) => {
+                (todo) => {<p>
                     if(todo.description.toLowerCase().includes(props.filterTodo.toLowerCase())){
-                        return( <TodoElement TodoStatus = {todo}/>)}
-                }
+                        return( <TodoGallery TodoStatus = {todo}/>)}
+                </p>}
             )}
         </div>
 

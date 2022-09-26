@@ -1,15 +1,15 @@
-import {toDos} from "../model/ToDos";
+import {ToDo} from "../model/ToDo";
 import ToDoCard from "./ToDoCard";
 
 type ToDoBoardProps = {
-    toDos: toDos[];
+    toDos:  ToDo[];
     filterToDo: string;
 }
 
 export default function ToDoBoard (props: ToDoBoardProps){
 
     return(
-        <div>
+        <div className={"cards"}>
             {props.toDos.map(
                 (toDo)=>{
                     if(toDo.description.toLowerCase().includes(props.filterToDo.toLowerCase())){

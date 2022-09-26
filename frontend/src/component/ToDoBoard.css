@@ -1,18 +1,13 @@
+.todo-card {
+    display: inline-block;
+    flex-direction: column;
+}
 
-.Board {
-    display: flex;
-    float: left;
-    flex-wrap: wrap;
-    justify-content: center;
-    font-family: sans-serif;
-    width: 300px;
-    border: solid hotpink;
-    border-radius: 15px;
-    padding: 24px;
+h3 {
     text-align: center;
-    box-shadow: 1px 2px 8px hotpink;
-    margin: 10px;
-    height: 300px;
-    font-size: 30px;
+}
 
+p{
+    text-align: center;
+    font-style: italic;
 }

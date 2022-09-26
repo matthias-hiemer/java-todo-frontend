@@ -1,4 +1,5 @@
 import {Todo} from "../../Todo";
+import TodoCard from "./TodoCard";
 
 
 type TodoOverviewProps = {
@@ -10,7 +11,7 @@ export default function TodoOverview(props : TodoOverviewProps){
 
     return (
         <div>
-            {props.todos.map((todo) => <p> {todo.description} </p> ) }
+            {props.todos.map((todo) => <TodoCard todo={todo}  /> ) }
         </div>
     )
 
